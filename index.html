@@ -37,23 +37,23 @@
 <div class="container">
     <button class="toggle-panel-btn" onclick="toggleTeacherPanel()">Open Control Panel</button>
     <div class="teacher-panel" id="teacherPanel">
-        <h2>Setup Panel</h2>
+        <h2>Year 2 Setup Panel</h2>
         <div style="margin-bottom: 15px;">
             <label style="font-weight:bold;">First Word Unlock Passcode: </label>
             <input type="text" id="teacherCodeSetting" value="sunny" style="padding:5px; font-size:1rem; width:120px;">
         </div>
         <div style="margin-bottom: 15px;">
-            <label style="font-weight:bold; display:block; margin-bottom:5px;">Paste Word List Below:</label>
+            <label style="font-weight:bold; display:block; margin-bottom:5px;">Paste Year 2 Word List Below:</label>
             <div style="font-size:0.85rem; color:#64748b; margin-bottom:5px;">Format: Word, Rule_Key, Sentence with __ blank</div>
-            <textarea id="bulkPasteInput" class="bulk-textarea" placeholder="look, oo_team, Please __ at the map.&#10;something, compound_words, I found __ special."></textarea>
-            <button onclick="processBulkPaste()" style="margin-top:0; padding:10px 20px; font-size:1rem; background-color:var(--success); width:100%;">Apply List</button>
+            <textarea id="bulkPasteInput" class="bulk-textarea" placeholder="catch, trigraph_tch, Did you __ the ball?&#10;table, consonant_le, Put your book on the __."></textarea>
+            <button onclick="processBulkPaste()" style="margin-top:0; padding:10px 20px; font-size:1rem; background-color:var(--success); width:100%;">Apply List to Year 2</button>
         </div>
     </div>
     <div class="student-card" id="gameCard"></div>
 </div>
 
 <script>
-    // Master Spelling Rules Dictionary
+    // Master Spelling Rules Dictionary Lookup Map for Year 2
     const MASTER_SPELLING_RULES = {
         "oo_team": "💡 <strong>The 'oo' Vowel Team:</strong> The letters 'oo' can make two different sounds! It can be a short sound like in <em>good</em>, or a long sound like in <em>food</em>.",
         "compound_words": "💡 <strong>Compound Words:</strong> This is when two complete words join together to make a brand-new word with a new meaning (like <em>some</em> + <em>thing</em> = <em>something</em>)!",
@@ -62,28 +62,13 @@
         "oa_ow_team": "💡 <strong>The Long /o/ Sound:</strong> Vowel teams 'oa' (in the middle like <em>boat</em>) and 'ow' (usually at the end like <em>slow</em>) join forces to say the long /o/ sound.",
         "r_controlled_ar_or": "💡 <strong>The Bossy R Rule (/ar/ and /or/):</strong> When 'r' sits right after 'a' or 'o', it becomes bossy! It changes their sounds to /ar/ (<em>farm</em>) or /or/ (<em>fork</em>).",
         "final_y_vowel": "💡 <strong>Tricky Final 'Y':</strong> At the end of a short 1-syllable word, 'y' sounds like a long /i/ (<em>cry</em>). In a longer 2-syllable word, it sounds like a long /e/ (<em>puppy</em>)!",
-        "prefix_un": "💡 <strong>The Prefix 'un-':</strong> Adding 'un-' to the front of a word changes its meaning to mean <strong>'not'</strong> or the opposite (like <em>lucky</em> becomes <em>unlucky</em>).",
-        "r_controlled_er_ir_u": "💡 <strong>The Bossy R Rule (/er/):</strong> When 'r' follows 'e', 'i', or 'u', it changes all of their sounds into the exact same /er/ sound (like <em>her</em>, <em>girl</em>, and <em>turn</em>)!",
-        "suffix_ly_er_est": "💡 <strong>Suffix Meanings:</strong> Adding '-ly' describes an action. We use '-er' and '-est' at the end of words when we are comparing items!",
-        "trigraph_tch": "💡 <strong>The Trigraph 'tch':</strong> Use 'tch' at the very end of a 1-syllable word, but only if it comes straight after a short vowel sound (like <em>catch</em> or <em>stitch</em>).",
-        "vccv_syllable": "💡 <strong>Syllable Division (VCCV):</strong> When a word has a Vowel-Consonant-Consonant-Vowel pattern (like <em>trum-pet</em>), chop it right in half between the two consonants!",
-        "vcv_camel_rule": "💡 <strong>The Camel Rule (VC.V):</strong> When one consonant stands between two vowels, we usually break the syllable *after* the consonant to keep the first vowel short (like <em>cam-el</em>).",
-        "v_cv_tiger_rule": "💡 <strong>The Tiger Rule (V.CV):</strong> When one consonant stands between two vowels, try breaking the syllable *before* it to keep the first vowel sound long (like <em>ti-ger</em>).",
-        "suffix_ful_less": "💡 <strong>Suffixes -ful and -less:</strong> The suffix '-ful' means 'full of' (spelled with **one l**). The suffix '-less' means 'without'.",
-        "cvc_doubling": "💡 <strong>The CVC Doubling Rule:</strong> If a 1-syllable word ends in a Consonant-Vowel-Consonant pattern (like <em>run</em>), you must **double the final consonant** before adding an ending like -ing (<em>running</em>).",
-        "silent_e_suffix": "💡 <strong>The Silent E Suffix Rule:</strong> When adding a vowel suffix (like -ing), **drop** the silent 'e' (<em>hope</em> -> <em>hoping</em>). When adding a consonant suffix (like -ful), **keep** it (<em>hopeful</em>).",
-        "consonant_le": "💡 <strong>The -Cle Syllable:</strong> Words ending in a consonant + 'le' (like <em>table</em> or <em>wiggle</em>) break right before that unit. Double the middle consonant if the vowel before it is short (<em>bub-ble</em>)!",
-        "soft_c_g": "💡 <strong>Soft C and Soft G:</strong> When 'c' or 'g' is followed directly by **e, i, or y**, they soften up! 'C' sounds like /s/ (<em>city</em>) and 'G' sounds like /j/ (<em>magic</em>).",
-        "vowel_y_suffix": "💡 <strong>The Y Suffix Rule:</strong> If a word ends in a Consonant + Y, change 'y' to 'i' before adding a suffix (<em>cry</em> -> <em>cried</em>). If it's a Vowel + Y, leave 'y' alone!",
-        "shuhn_suffixes": "💡 <strong>The 'Shuhn' Endings (-tion, -sion, -cian):</strong> Use **-cian** for a person with a specific skill or job (<em>musician</em>). Use **-tion** or **-sion** for a state of being (<em>celebration</em>).",
-        "silent_consonants": "💡 <strong>Silent Letter Combos:</strong> Watch out for historic couples where one letter goes completely quiet: 'wr' sounds like /r/, 'kn' sounds like /n/, 'sc' sounds like /s/, and 'mb' sounds like /m/.",
-        "schwa_vowel": "💡 <strong>The Lazy Schwa Vowel:</strong> In weak syllables, vowels lose their pure identity and turn into a lazy, muffled 'uh' sound. **Any** vowel can make this sound!",
-        "f_fe_plurals": "💡 <strong>Changing F to V Plurals:</strong> When a word ends in an 'f' or 'fe' sound (like <em>wolf</em>), drop the 'f/fe', replace it with a **'v'**, and add **'es'** to make it plural (<em>wolves</em>)."
+        "prefix_un": "💡 <strong>The Prefix 'un-':</strong> Adding 'un-' to the front of a word changes its meaning to mean <strong>'not'</strong> or the opposite (like <em>lucky</em> becomes <em>unlucky</em>)."
     };
 
     const formViewURL = "https://docs.google.com/forms/d/e/1FAIpQLSddB0NQFaIBv9x-feJucH_YGDwHb8suDI9h1ShPOv1yGzCCXQ/viewform";
     const nameKey = "entry.421008981"; const wordsKey = "entry.1429911539"; const incorrectKey = "entry.407995943"; const scoreKey = "entry.211442136";
     
+    // Explicit storage tags specifically for Year 2 to prevent mixing data
     const storageKeyCurriculum = 'genericSavedCurriculum_Year2';
     const storageKeyCode = 'genericSavedCode_Year2';
 
@@ -111,7 +96,7 @@
         document.getElementById('bulkPasteInput').value = "";
         toggleTeacherPanel();
         studentName = ""; currentStep = 0; renderStep();
-        alert(`Station updated successfully!`);
+        alert(`Year 2 updated successfully!`);
     }
 
     function toggleTeacherPanel() { 
@@ -126,7 +111,7 @@
     function renderStep() {
         const card = document.getElementById('gameCard');
         if (Object.keys(masterRulesMap).length === 0) {
-            card.innerHTML = `<h2>Vocabulary Station</h2><p>Click <strong>Open Control Panel</strong> to paste your target word list!</p>`;
+            card.innerHTML = `<h2>Year 2 Station</h2><p>Click <strong>Open Control Panel</strong> to paste your Year 2 list!</p>`;
             return;
         }
         if (currentStep === 0) {
@@ -142,7 +127,6 @@
             const currentData = activeLessonWords[currentWordIndex];
             let progressHTML = `<div class="progress-bar">${activeLessonLabel} &bull; Word ${currentWordIndex + 1} of ${activeLessonWords.length}</div>`;
             
-            // Check if the rule text exists in our master dictionary, otherwise default to the category name
             let ruleExplanation = MASTER_SPELLING_RULES[currentData.rule] || `💡 <strong>Pattern Rule:</strong> Focus on spelling words in the ${currentData.rule} category carefully!`;
 
             if (currentStep === 1) {
